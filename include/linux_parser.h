@@ -5,13 +5,8 @@
 #include <regex>
 #include <string>
 
-#include "system_info.h"
-#include "cpu_info.h"
-#include "process_info.h"
-
-class LinuxParser : public SystemInfo, public CPUInfo, public ProcessInfo
+namespace LinuxParser
 {
-public:
 // Paths
     const std::string kProcDirectory{"/proc/"};
     const std::string kCmdlineFilename{"/cmdline"};
@@ -26,34 +21,46 @@ public:
     const int kProcessUptimeIndex = 22;
     const int kProcessCpuUtilizationIndex = 14;
 
-// ProcessInfo implementation
-    float MemoryUtilization() override;
-    long UpTime() override;
-    std::vector<int> Pids() override;
-    int TotalProcesses() override;
-    int RunningProcesses() override;
-    std::string OperatingSystem() override;
-    std::string Kernel() override;
+enum CPUStates {
+  kUser_ = 0,
+  kNice_,
+  kSystem_,
+  kIdle_,
+  kIOwait_,
+  kIRQ_,
+  kSoftIRQ_,
+  kSteal_,
+  kGuest_,
+  kGuestNice_
+};
 
-// CPUInfo implementation
-    std::vector<float> CpuUtilization() override;
-    float CpuUtilization(int pid) override;
+// Process functions
+    float MemoryUtilization();
+    long UpTime();
+    std::vector<int> Pids();
+    int TotalProcesses();
+    int RunningProcesses();
+    std::string OperatingSystem();
+    std::string Kernel();
 
-// ProcessInfo implementation
-    std::string Command(int pid) override;
-    std::string Ram(int pid) override;
-    std::string Uid(int pid) override;
-    std::string User(std::string uid) override;
-    long int UpTime(int pid) override;
+// CPU functions
+    std::vector<float> CpuUtilization();
+    float CpuUtilization(int pid);
 
-private:
+// Processesor functions
+    std::string Command(int pid);
+    std::string Ram(int pid);
+    std::string Uid(int pid);
+    std::string User(std::string uid);
+    float UpTime(int pid);
+
     struct MemoryData
     {
         float mem_total = -1, mem_free = -1;
     };
 
-    bool IsMemoryDataCollected(MemoryData& memory) const;
-    std::vector<long> CpuTimes(const int pid);
+    bool IsMemoryDataCollected(MemoryData& memory);
+    std::vector<float> CpuTimes(const int pid);
 }; 
 
 #endif

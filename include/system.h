@@ -23,7 +23,6 @@ public:
   std::string OperatingSystem();      
 
  private:
-  LinuxParser parser_;
   Processor cpu_ = {};
   std::vector<Process> processes_ = {};
   std::string operating_system_;

@@ -13,7 +13,6 @@ class Processor
   float GetTotalTime() const;
 
   const int idle_time_index = 3;
-  LinuxParser parser_;
   float prev_idle_time_ = 0;
   float prev_total_time_ = 0;
   std::vector<float> cpu_times_;

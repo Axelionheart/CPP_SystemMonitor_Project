@@ -100,7 +100,7 @@ float LinuxParser::MemoryUtilization()
   return memory_data.mem_free / memory_data.mem_total;  
 }
 
-bool LinuxParser::IsMemoryDataCollected(MemoryData& data) const
+bool LinuxParser::IsMemoryDataCollected(MemoryData& data)
 {
   if(data.mem_free < 0)
     return false;
@@ -149,29 +149,32 @@ std::vector<float> LinuxParser::CpuUtilization()
 
 float LinuxParser::CpuUtilization(int pid) 
 { 
-   std::vector<long> cpu_times = CpuTimes(pid);
+   std::vector<float> cpu_times = CpuTimes(pid);
 
-   long utime = cpu_times[0];
-   long stime = cpu_times[1];
-   long cutime = cpu_times[2];
-   long cstime = cpu_times[3];
+   float utime = cpu_times[0];
+   float stime = cpu_times[1];
+   float cutime = cpu_times[2];
+   float cstime = cpu_times[3];
 
-   long start_time = UpTime(pid);
-   long system_uptime = UpTime();
+   float start_time = UpTime(pid);
+   float system_uptime = UpTime();
 
-   long total_process_time = utime + stime;
+   float total_process_time = utime + stime;
    total_process_time = total_process_time + cutime + cstime;
 
-   long seconds = system_uptime - (start_time / sysconf(_SC_CLK_TCK)) ;
+   if(total_process_time == 0)
+      return 0;
 
-   return 100 * ((total_process_time / sysconf(_SC_CLK_TCK)) / seconds);
+   float seconds = system_uptime - (start_time / sysconf(_SC_CLK_TCK)) ;
+
+   return ((total_process_time / sysconf(_SC_CLK_TCK)) / seconds);
 }
 
-std::vector<long> LinuxParser::CpuTimes(const int pid)
+std::vector<float> LinuxParser::CpuTimes(const int pid)
 {
    string line, value;
    int value_count = 1;
-   std::vector<long> cpu_times = {};
+   std::vector<float> cpu_times = {};
 
   std::ifstream filestream(kProcDirectory + to_string(pid) + kStatFilename);
   if (filestream.is_open()) 
@@ -321,7 +324,7 @@ string LinuxParser::User(string uid)
   return string{};
 }
 
-long int LinuxParser::UpTime(int pid) 
+float LinuxParser::UpTime(int pid) 
 { 
    string line, value;
    int value_count = 1;
@@ -336,7 +339,7 @@ long int LinuxParser::UpTime(int pid)
       {
         if(value_count == kProcessUptimeIndex) 
         {
-          return std::stol(value);
+          return std::stof(value);
         }
         ++value_count;
       }

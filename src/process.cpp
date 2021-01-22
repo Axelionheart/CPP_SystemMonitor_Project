@@ -16,18 +16,17 @@ int Process::Pid() { return pid_; }
 
 float Process::CpuUtilization() 
 { 
-    cpu_utilization_ = parser_.CpuUtilization(pid_);
-    return cpu_utilization_; 
+    return LinuxParser::CpuUtilization(pid_); 
 }
 
 string Process::Command() 
 { 
-    return parser_.Command(pid_);
+    return LinuxParser::Command(pid_);
 }
 
 string Process::Ram() 
 { 
-    string memory_in_kb = parser_.Ram(pid_); 
+    string memory_in_kb = LinuxParser::Ram(pid_); 
     int memory_in_mb = stoi(memory_in_kb) / 1000;
 
     return to_string(memory_in_mb);
@@ -35,17 +34,16 @@ string Process::Ram()
 
 string Process::User() 
 {  
-    std::string uid = parser_.Uid(pid_);
-    user_name_ = parser_.User(uid);
-    return user_name_;
+    std::string uid = LinuxParser::Uid(pid_);
+    return LinuxParser::User(uid);
 }
 
-long int Process::UpTime() 
+float Process::UpTime() 
 { 
-    return parser_.UpTime(pid_) / sysconf(_SC_CLK_TCK); 
+    return LinuxParser::UpTime(pid_) / sysconf(_SC_CLK_TCK); 
 }
 
-bool Process::operator<(Process const& process)  
+bool Process::operator<(Process& process)  
 { 
-   return  cpu_utilization_ <  process.cpu_utilization_; 
+   return  CpuUtilization() > process.CpuUtilization(); 
 }

@@ -9,7 +9,7 @@ using std::stof;
 
 float Processor::Utilization() 
 { 
-  cpu_times_ = parser_.CpuUtilization();
+  cpu_times_ = LinuxParser::CpuUtilization();
 
   const float idle_time = GetIdleTime();
   const float total_time = GetTotalTime();

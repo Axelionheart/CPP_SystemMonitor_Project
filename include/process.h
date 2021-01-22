@@ -14,15 +14,11 @@ class Process
   std::string Command();                   
   float CpuUtilization();                  
   std::string Ram();                       
-  long int UpTime();                       
-  bool operator<(Process const& a);  
+  float UpTime();                       
+  bool operator<(Process& p);  
 
  private:
-  LinuxParser parser_;
   int pid_ = 0;
-  float cpu_utilization_ = 0.0;
-  std::string user_name_;
-  std::string comandline_args_;
 };
 
 #endif
